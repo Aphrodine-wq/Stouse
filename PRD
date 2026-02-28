@@ -1,0 +1,1131 @@
+
+VIBEHOUSE
+AI-Powered Home Construction Platform
+
+
+Product Requirements Document
+Version 1.0  |  February 2026  |  CONFIDENTIAL
+
+Prepared by: VibeHouse Product Team
+Status: Draft for Stakeholder Review
+
+Table of Contents
+
+1. Executive Summary
+2. Problem Statement & Market Opportunity
+3. Product Vision & Principles
+4. User Personas
+5. System Architecture Overview
+6. Core Feature Specifications
+7. AI Design Engine (Vibe Code Engine)
+8. Trello Integration & Build Board System
+9. Vendor & Contractor Orchestration
+10. Daily Reporting & Notifications
+11. Dispute Resolution Engine
+12. Backend Architecture (Python)
+13. Data Models & Database Schema
+14. API Specification
+15. Security & Compliance
+16. Performance & Scalability
+17. Third-Party Integrations
+18. User Interface & UX Flows
+19. Release Roadmap & Milestones
+20. Success Metrics & KPIs
+21. Risk Assessment & Mitigations
+22. Appendices
+
+1. Executive Summary
+
+VibeHouse is an AI-driven, end-to-end home construction management platform that transforms the way residential homes are designed, planned, and built. By leveraging generative AI, natural language processing, and deep integration with project management tools, VibeHouse enables a homeowner to describe their dream home in plain language and receive a complete, buildable set of design plans, a fully orchestrated construction schedule, automated vendor procurement, daily build reporting, and an intelligent dispute resolution system.
+
+The platform introduces the concept of "Vibe Coding" a house: users describe the aesthetic, functional, and emotional qualities they want in a home, and the AI translates these into architectural plans, engineering specifications, material lists, contractor assignments, and a living Trello board that serves as the single source of truth for the entire build lifecycle.
+
+Key Value Propositions
+	•	Zero-to-Blueprint in Hours: AI generates complete architectural and engineering plans from natural language descriptions, reducing the design phase from weeks to hours.
+	•	Autonomous Vendor Orchestration: The platform automatically identifies, contacts, vets, and schedules contractors, suppliers, and inspectors across every trade required for the build.
+	•	Living Build Board: A Trello-powered project board that the AI continuously monitors, updates, and uses to drive real-time decision-making and reporting.
+	•	Daily Intelligence Reports: Automated reports delivered to every stakeholder with progress metrics, risk alerts, budget tracking, and next-day action items.
+	•	Dispute Resolution AI: Proactive identification of conflicts, delays, and disagreements with structured resolution workflows that keep the project moving.
+	•	Python-Powered Backend: A high-performance, event-driven backend built on Python with FastAPI, Celery, and PostgreSQL, designed for speed, reliability, and horizontal scalability.
+
+2. Problem Statement & Market Opportunity
+
+2.1 The Problem
+Building a custom home is one of the most complex, expensive, and stressful undertakings a consumer will ever face. The current process is fragmented, opaque, and riddled with inefficiencies that cost homeowners an average of 20-30% over budget and 6-12 months of delays. The core problems include:
+
+	•	Fragmented Design Process: Homeowners must hire architects, structural engineers, interior designers, and landscape architects independently, with no unified platform to coordinate their work.
+	•	Vendor Discovery is Manual: Finding, vetting, and coordinating dozens of contractors across plumbing, electrical, HVAC, framing, roofing, concrete, landscaping, and more is entirely manual and deeply inefficient.
+	•	No Real-Time Visibility: Homeowners lack a single dashboard showing real-time build progress, budget status, and upcoming milestones. Communication happens through scattered text messages, emails, and phone calls.
+	•	Disputes Escalate Silently: Disagreements between contractors, between the homeowner and the builder, or about change orders often go unaddressed until they become project-threatening conflicts.
+	•	Reporting is Nonexistent: Most homeowners receive no structured reporting on their build. Those who do get weekly or monthly updates that are already stale by the time they arrive.
+
+2.2 Market Opportunity
+The U.S. residential construction market represents over $900 billion annually, with custom home construction accounting for approximately $120 billion of that total. The global construction technology market is projected to reach $35 billion by 2030, growing at a CAGR of 14.2%. Despite this massive market, no existing platform addresses the full lifecycle from design intent to move-in day with AI at its core.
+
+Market Segment
+Size (USD)
+Growth Rate
+Penetration
+U.S. Custom Home Construction
+$120B/year
+4.2% CAGR
+< 1% tech-managed
+Construction Project Management Software
+$9.3B
+12.7% CAGR
+~15% of builds
+AI in Architecture & Design
+$1.8B
+22.4% CAGR
+< 3% adoption
+Residential Construction Dispute Resolution
+$4.2B
+8.1% CAGR
+< 5% automated
+
+3. Product Vision & Principles
+
+3.1 Vision Statement
+"Every person should be able to describe their dream home and watch it come to life, with AI handling the complexity of design, coordination, and construction management from the first sketch to the final walkthrough."
+
+3.2 Core Design Principles
+
+	•	Vibe-First Design: Users describe feelings, aesthetics, and lifestyle needs. The AI translates vibes into specifications. Users should never need to think in architectural terms unless they want to.
+	•	AI as Project Manager: The AI is not a passive tool. It is the active project manager that monitors, decides, escalates, and reports. It operates autonomously within defined guardrails and defers to the user only when human judgment is required.
+	•	Trello as the Living Contract: The Trello board is the single source of truth. Every stakeholder interacts with it. Every AI action is reflected on it. Every change is tracked through it.
+	•	Transparency by Default: Every AI decision, vendor communication, cost estimate, and schedule change is logged, auditable, and visible to the homeowner in real time.
+	•	Speed Without Sacrifice: The backend must be blazingly fast. Design generation in under 60 seconds. Vendor matching in under 30 seconds. Board updates in under 5 seconds. Daily reports generated and delivered before 7:00 AM local time.
+	•	Dispute Prevention Over Resolution: The system proactively identifies potential conflicts and surfaces them before they escalate. When disputes do occur, structured workflows resolve them quickly with full documentation.
+
+4. User Personas
+
+4.1 Primary Persona: The Homeowner ("The Dreamer")
+A first-time or experienced homeowner who wants to build a custom home but lacks the expertise, time, or patience to manage the traditional construction process. They can describe what they want but cannot translate that into blueprints, permits, or contractor schedules.
+
+Attribute
+Details
+Age Range
+30-55
+Tech Comfort
+Moderate to high; uses apps daily, comfortable with Trello-style tools
+Budget Range
+$250K - $2M+ build cost
+Pain Points
+Overwhelmed by complexity, fears going over budget, cannot evaluate contractor quality
+Key Need
+A single platform that handles everything from design to move-in
+Interaction Mode
+Natural language prompts, Trello board review, mobile notifications
+
+4.2 Secondary Persona: The General Contractor ("The Builder")
+A licensed general contractor or specialty trade contractor who is assigned to the project through VibeHouse. They interact with the platform through the Trello board, receive daily task assignments, submit progress updates, and participate in the dispute resolution process.
+
+4.3 Tertiary Persona: The Inspector / Compliance Officer
+Municipal building inspectors, bank inspectors, or third-party quality assurance professionals who need structured access to build documentation, inspection schedules, and compliance records. They interact through read-only dashboards and inspection scheduling interfaces.
+
+5. System Architecture Overview
+
+5.1 High-Level Architecture
+VibeHouse follows a microservices-oriented architecture with an event-driven backbone. The system is decomposed into six primary service domains, each responsible for a distinct capability, communicating through an asynchronous message bus with synchronous API gateways for client-facing operations.
+
+Service Domains
+
+Service Domain
+Responsibility
+Core Technology
+Vibe Engine
+AI design generation, plan creation, material estimation
+Python, FastAPI, GPT-4/Claude, Stable Diffusion
+Orchestration Service
+Vendor discovery, matching, outreach, contract management
+Python, Celery, Redis, Twilio, SendGrid
+Trello Sync Service
+Board creation, real-time monitoring, card management, webhook processing
+Python, FastAPI, Trello REST API, WebSockets
+Reporting Engine
+Daily report generation, analytics, dashboards, notification dispatch
+Python, Celery Beat, Jinja2, WeasyPrint, Chart.js
+Dispute Engine
+Conflict detection, escalation workflows, resolution tracking
+Python, FastAPI, State Machine, NLP classifiers
+Core Platform
+Auth, user management, billing, project lifecycle, audit logging
+Python, FastAPI, PostgreSQL, SQLAlchemy, Alembic
+
+5.2 Infrastructure Stack
+
+Layer
+Technology
+Purpose
+API Gateway
+Kong / AWS API Gateway
+Rate limiting, auth, routing, SSL termination
+Application Servers
+FastAPI on Uvicorn (ASGI)
+Async HTTP endpoints, WebSocket support
+Task Queue
+Celery + Redis
+Async job processing, scheduled tasks, retries
+Primary Database
+PostgreSQL 16
+Relational data, JSONB for flexible schemas
+Cache Layer
+Redis Cluster
+Session cache, rate limiting, real-time state
+Object Storage
+AWS S3 / MinIO
+Design files, PDFs, images, documents
+Message Bus
+RabbitMQ / AWS SQS
+Inter-service async communication
+Search Engine
+Elasticsearch
+Vendor search, document search, log aggregation
+ML Serving
+NVIDIA Triton / TorchServe
+Model inference for design generation
+Monitoring
+Prometheus + Grafana + Sentry
+Metrics, alerting, error tracking
+CI/CD
+GitHub Actions + ArgoCD
+Automated testing, deployment, rollbacks
+Container Orchestration
+Kubernetes (EKS)
+Service scaling, health checks, rolling deploys
+
+6. Core Feature Specifications
+
+6.1 Feature Map Overview
+The VibeHouse platform is organized into six major feature domains, each containing multiple feature sets. The following table provides a high-level map of all features with their priority classifications.
+
+Feature Domain
+Feature Set
+Priority
+Phase
+Vibe Code Engine
+Natural Language Design Input
+P0 - Critical
+Phase 1
+Vibe Code Engine
+AI Floor Plan Generation
+P0 - Critical
+Phase 1
+Vibe Code Engine
+3D Rendering & Visualization
+P1 - High
+Phase 2
+Vibe Code Engine
+Structural Engineering Calculations
+P0 - Critical
+Phase 1
+Vibe Code Engine
+Material Bill of Quantities
+P0 - Critical
+Phase 1
+Vibe Code Engine
+Permit-Ready Document Generation
+P1 - High
+Phase 2
+Trello Integration
+Auto Board Creation & Template
+P0 - Critical
+Phase 1
+Trello Integration
+Real-Time Board Scanning
+P0 - Critical
+Phase 1
+Trello Integration
+AI Card Management
+P0 - Critical
+Phase 1
+Trello Integration
+Dependency Tracking & Critical Path
+P1 - High
+Phase 2
+Vendor Orchestration
+Vendor Discovery & Matching
+P0 - Critical
+Phase 1
+Vendor Orchestration
+Automated Outreach & Contracting
+P0 - Critical
+Phase 1
+Vendor Orchestration
+Bid Comparison Engine
+P1 - High
+Phase 2
+Vendor Orchestration
+Contractor Performance Scoring
+P2 - Medium
+Phase 3
+Daily Reporting
+Automated Daily Build Reports
+P0 - Critical
+Phase 1
+Daily Reporting
+Photo Progress Integration
+P1 - High
+Phase 2
+Daily Reporting
+Budget Burn-Down Tracking
+P0 - Critical
+Phase 1
+Dispute Resolution
+Conflict Detection Engine
+P1 - High
+Phase 2
+Dispute Resolution
+Structured Resolution Workflows
+P0 - Critical
+Phase 1
+Dispute Resolution
+Escalation & Mediation
+P1 - High
+Phase 2
+Core Platform
+User Authentication & Roles
+P0 - Critical
+Phase 1
+Core Platform
+Project Lifecycle Management
+P0 - Critical
+Phase 1
+Core Platform
+Billing & Payments
+P1 - High
+Phase 2
+
+7. AI Design Engine (Vibe Code Engine)
+
+7.1 Natural Language Design Pipeline
+The Vibe Code Engine is the heart of VibeHouse. It accepts natural language input from the user and produces a complete, buildable set of architectural and engineering documents. The pipeline operates in six stages, each producing artifacts that feed into the next.
+
+Stage 1: Vibe Capture
+The user describes their desired home through a guided conversational interface. The AI extracts structured requirements from unstructured input using a multi-turn dialogue system. The system captures aesthetic preferences ("I want a warm, modern farmhouse feel"), functional requirements ("4 bedrooms, open kitchen, home office"), site constraints ("0.5 acre lot, gentle slope, south-facing"), budget parameters, and lifestyle needs ("we entertain a lot, need great outdoor living").
+
+Stage 2: Requirement Synthesis
+The AI normalizes captured vibes into a structured Requirement Specification Object (RSO) containing room definitions, adjacency preferences, structural constraints, material preferences, code requirements (based on jurisdiction), and budget allocations per system (structural, MEP, finish, landscape).
+
+Stage 3: Floor Plan Generation
+Using the RSO, a fine-tuned diffusion model generates multiple floor plan options. Each plan is scored against the requirements using a multi-objective optimization function that weighs spatial efficiency, flow quality, natural light, structural simplicity, and cost. The top 3 plans are presented to the user for selection and refinement.
+
+Stage 4: Engineering Analysis
+The selected floor plan is processed through structural, mechanical, electrical, and plumbing analysis engines. Structural loads are calculated, HVAC sizing is determined, electrical panel layouts are generated, and plumbing routes are planned. All calculations conform to the International Building Code (IBC) and local jurisdiction amendments.
+
+Stage 5: Document Generation
+Complete construction document sets are generated including architectural plans (floor plans, elevations, sections, details), structural plans (foundation, framing, connections), MEP plans (mechanical, electrical, plumbing), a complete bill of materials with quantities and estimated costs, and a construction schedule with task dependencies and critical path analysis.
+
+Stage 6: Permit Packaging
+Documents are formatted to meet local jurisdiction submission requirements, including title block formatting, sheet indexing, energy compliance documentation (Title 24 / IECC), and site plan overlays. The system maintains a database of submission requirements for major U.S. jurisdictions.
+
+7.2 AI Model Architecture
+
+Component
+Model / Technology
+Purpose
+Latency Target
+Vibe Parser
+Claude 3.5 Sonnet / GPT-4 Turbo
+NL understanding, requirement extraction
+< 3s per turn
+Floor Plan Generator
+Custom Diffusion Model (SDXL fine-tuned)
+Spatial layout generation
+< 45s per plan
+Plan Evaluator
+Custom CNN + GNN
+Layout quality scoring
+< 5s per plan
+Structural Analyzer
+FEA Engine (PyNite / OpenSees)
+Load calculations, member sizing
+< 30s
+MEP Router
+Constraint Satisfaction + Pathfinding
+System routing and sizing
+< 20s
+Doc Generator
+Template Engine + CAD Kernel
+Construction document output
+< 60s full set
+Cost Estimator
+XGBoost + Regional Price DB
+Material and labor costing
+< 10s
+
+8. Trello Integration & Build Board System
+
+8.1 Build Board Architecture
+The Trello Build Board is the operational backbone of every VibeHouse project. It is not a passive Kanban board; it is an AI-monitored, real-time project management surface that every stakeholder interacts with. The AI continuously scans the board for changes, infers intent, updates dependent tasks, and triggers downstream workflows.
+
+Board Structure
+Each project generates a Trello board with the following list structure, auto-populated with cards from the construction schedule:
+
+Trello List
+Purpose
+Card Types
+Backlog
+All future tasks not yet scheduled
+Task cards with dependencies, estimates, assignments
+This Week
+Tasks scheduled for the current week
+Active task cards with daily breakdowns
+In Progress
+Tasks currently being worked on
+Cards moved here by contractors or AI
+Blocked
+Tasks that cannot proceed
+Cards with blocker annotations, auto-escalation timers
+In Review / Inspection
+Tasks awaiting quality check or inspection
+Cards with inspection checklists, photo requirements
+Dispute / Hold
+Tasks with active disputes or holds
+Cards linked to dispute resolution workflows
+Completed
+Tasks verified as complete
+Cards with completion evidence, sign-off records
+Change Orders
+Scope changes requested or approved
+Cards with cost impact, approval status, timeline impact
+
+8.2 AI Board Scanning Engine
+The Trello Sync Service continuously monitors the Build Board using a combination of Trello webhooks (for real-time push notifications) and periodic polling (as a reliability fallback). The scanning engine processes the following event types:
+
+	•	Card Moves: When a card is moved between lists, the AI evaluates whether the move is valid (does the task have unresolved dependencies?), updates dependent task timelines, triggers notifications to affected stakeholders, and recalculates the critical path.
+	•	Card Comments: Natural language comments from contractors or the homeowner are parsed by the AI. Comments indicating problems ("concrete delivery delayed 2 days") trigger automatic schedule adjustments. Questions ("can we substitute oak for maple?") are routed to the appropriate decision-maker.
+	•	Checklist Updates: Inspection checklists and task completion checklists are monitored. When all items are checked, the AI auto-advances the card to the next stage or flags items that need manual verification.
+	•	Label Changes: Color-coded labels indicate priority, risk level, and category. The AI monitors label changes and adjusts reporting and escalation behavior accordingly.
+	•	Due Date Modifications: Any due date change triggers a cascading dependency analysis. The AI identifies all downstream tasks affected, calculates new projected dates, and generates a schedule impact report.
+
+8.3 Webhook Processing Pipeline
+
+Step
+Action
+Latency Target
+1. Receive
+Trello webhook hits /api/v1/webhooks/trello endpoint
+< 100ms ACK
+2. Validate
+Verify webhook signature, parse payload, deduplicate
+< 50ms
+3. Classify
+Determine event type and affected entities
+< 100ms
+4. Enqueue
+Push to appropriate Celery task queue with priority
+< 50ms
+5. Process
+Execute business logic, update internal state
+< 2s
+6. Cascade
+Trigger dependent updates, notifications, reports
+< 5s
+7. Sync Back
+Push any AI-generated changes back to Trello
+< 3s
+
+8.4 Board Sync Reliability
+To ensure the Trello board and the VibeHouse internal state never diverge, the system implements a three-tier consistency model: real-time webhook processing as the primary sync mechanism, a 60-second polling interval as a secondary fallback that catches any missed webhooks, and a full board reconciliation job that runs every 15 minutes comparing the complete Trello board state against the internal database and resolving any discrepancies.
+
+9. Vendor & Contractor Orchestration
+
+9.1 Vendor Discovery Pipeline
+When the construction schedule is finalized, the Orchestration Service automatically identifies the trades required for each phase and begins the vendor discovery and engagement process. The pipeline operates as follows:
+
+	1	Trade Identification: Parse the construction schedule to identify all required trades (e.g., concrete, framing, electrical, plumbing, HVAC, roofing, drywall, painting, flooring, landscaping).
+	2	Geographic Search: Query the vendor database and external APIs (Google Places, Yelp, state licensing boards) for licensed contractors within a configurable radius of the build site.
+	3	Qualification Filtering: Filter results by license status, insurance coverage, bond status, years in business, online rating thresholds, and any homeowner-specified preferences.
+	4	Availability Matching: Cross-reference contractor availability calendars against the project schedule to identify contractors who can meet the required start dates.
+	5	AI Ranking: Score qualified contractors using a composite algorithm weighing price history, quality ratings, reliability scores, proximity, past VibeHouse performance, and schedule fit.
+	6	Automated Outreach: Send personalized RFQ (Request for Quotation) packages to the top-ranked contractors via email and SMS, including project scope, timeline, plans, and a response portal link.
+	7	Bid Collection & Comparison: Aggregate incoming bids, normalize pricing structures, and present a comparison matrix to the homeowner with AI recommendations.
+	8	Contract Generation: Upon selection, auto-generate scope-specific contracts with payment milestones tied to Trello card completion.
+
+9.2 Outreach Communication Templates
+All vendor communications are generated by the AI and customized per trade, project, and contractor. Templates include initial RFQ emails, follow-up reminders (3-day and 7-day), bid acceptance notifications, contract packages, onboarding instructions with Trello board access, and schedule confirmation messages. Each communication is logged in the project audit trail and linked to the corresponding Trello card.
+
+9.3 Vendor Communication Channels
+
+Channel
+Technology
+Use Case
+Email
+SendGrid API
+RFQs, contracts, formal communications, daily reports
+SMS
+Twilio API
+Urgent alerts, schedule reminders, confirmation codes
+In-App Messaging
+WebSocket + Push
+Real-time chat within VibeHouse platform
+Trello Comments
+Trello API
+Task-specific communication visible on Build Board
+Phone (Automated)
+Twilio Voice API
+Critical escalation calls for unresponsive contractors
+
+10. Daily Reporting & Notifications
+
+10.1 Daily Build Report
+Every morning before 7:00 AM local time, the Reporting Engine generates and delivers a comprehensive Daily Build Report to all project stakeholders. The report is generated by scanning the Trello board state, internal project data, weather forecasts, and vendor communication logs.
+
+Report Contents
+
+Section
+Content
+Data Source
+Executive Summary
+1-paragraph AI-written summary of yesterday and today
+Trello + Internal DB
+Progress Tracker
+Tasks completed yesterday, tasks active today, tasks starting tomorrow
+Trello Board Scan
+Schedule Health
+Days ahead/behind, critical path status, projected completion date
+Schedule Engine
+Budget Dashboard
+Spent to date, committed costs, remaining budget, burn rate
+Financial Module
+Risk Alerts
+Weather delays, supply chain issues, contractor no-shows, permit delays
+Multi-source AI Analysis
+Photo Gallery
+Site photos uploaded by contractors in the last 24 hours
+S3 + Trello Attachments
+Dispute Status
+Active disputes, pending resolutions, escalation timers
+Dispute Engine
+Tomorrow Preview
+Scheduled deliveries, inspections, task starts, weather forecast
+Schedule + Weather API
+Action Items
+Decisions needed from homeowner, approvals pending
+Trello + Dispute Engine
+
+10.2 Report Delivery
+	•	Email: Full HTML report with embedded charts delivered to all stakeholders.
+	•	SMS: A condensed 3-line summary with a link to the full report.
+	•	Push Notification: Mobile app notification with key metrics and any action items.
+	•	Trello Card: A daily report card is created in a dedicated "Reports" list on the Build Board with the full report attached as a PDF.
+
+10.3 Real-Time Notification Engine
+Beyond daily reports, the platform sends real-time notifications for critical events including: task completion confirmations, inspection pass/fail results, budget threshold breaches (75%, 90%, 100% of category budgets), schedule slip alerts when the critical path shifts, dispute filings and resolution updates, weather alerts that may impact scheduled work, contractor no-show detection (GPS + Trello activity), and change order requests.
+
+11. Dispute Resolution Engine
+
+11.1 Dispute Detection
+The Dispute Engine uses natural language processing to analyze all communications across the platform and proactively identify potential conflicts before they escalate. Detection signals include:
+
+	•	Sentiment Analysis: Negative sentiment trends in Trello comments, emails, or in-app messages. A sustained negative sentiment score triggers a pre-dispute alert.
+	•	Schedule Conflict Detection: When two contractors are scheduled for overlapping work areas, when a task is blocked for more than 48 hours, or when a contractor misses two consecutive daily check-ins.
+	•	Budget Variance Alerts: When actual costs for a line item exceed the estimate by more than 15%, or when cumulative spending trends indicate a likely budget overrun.
+	•	Quality Concern Flags: When inspection checklists have more than 2 failed items, when a contractor requests rework, or when the homeowner flags a concern in any communication.
+
+11.2 Dispute Workflow
+When a dispute is identified (either proactively by the AI or manually by a stakeholder), it enters a structured four-stage resolution workflow:
+
+Stage
+Duration
+Actions
+Escalation Trigger
+1. Identification
+0-4 hours
+AI drafts dispute summary, notifies parties, creates Trello card in Dispute list, gathers evidence
+Auto-escalates if no acknowledgment in 4 hours
+2. Direct Resolution
+24-72 hours
+Parties negotiate via structured in-app messaging. AI suggests resolutions based on contract terms and precedent
+Escalates if no agreement in 72 hours
+3. AI Mediation
+48-96 hours
+AI presents binding resolution options based on contract analysis, cost-benefit analysis, and project impact
+Escalates if both parties reject all AI options
+4. External Mediation
+5-15 days
+Platform connects parties with a licensed construction mediator. Full documentation package auto-generated
+Legal referral if mediation fails
+
+11.3 Dispute Prompting System
+The user-facing dispute interface is conversational. When a dispute is detected or filed, the system prompts the homeowner through a guided process:
+
+	•	"We noticed [specific issue]. Would you like to flag this as a concern?"
+	•	"The contractor has responded with [summary]. Here are your options: Accept, Counter-Propose, Escalate."
+	•	"Based on your contract and similar projects, we recommend [specific resolution]. Here is our reasoning."
+	•	"This dispute has been open for [X days]. Would you like to escalate to formal mediation?"
+Every prompt includes full context, relevant contract clauses, cost implications, and schedule impact of each option.
+
+12. Backend Architecture (Python)
+
+12.1 Technology Stack
+
+Component
+Technology
+Version
+Justification
+Web Framework
+FastAPI
+0.110+
+Async-native, auto OpenAPI docs, Pydantic validation, WebSocket support
+ASGI Server
+Uvicorn + Gunicorn
+Latest
+Production-grade async server with process management
+ORM
+SQLAlchemy 2.0
+2.0+
+Async support, type-safe queries, Alembic migrations
+Task Queue
+Celery
+5.3+
+Distributed task execution, scheduling, retries, rate limiting
+Message Broker
+Redis 7 / RabbitMQ
+7.x / 3.x
+High-throughput message passing, pub/sub, caching
+Database
+PostgreSQL
+16+
+JSONB, full-text search, partitioning, row-level security
+Caching
+Redis Cluster
+7.x
+Sub-millisecond reads, distributed locking, session store
+HTTP Client
+httpx
+0.27+
+Async HTTP for external API calls (Trello, vendors)
+Validation
+Pydantic v2
+2.6+
+Data validation, serialization, settings management
+Testing
+pytest + pytest-asyncio
+Latest
+Async test support, fixtures, coverage
+Linting
+Ruff + mypy
+Latest
+Fast linting, type checking, code quality enforcement
+Containerization
+Docker + Docker Compose
+Latest
+Reproducible builds, local dev parity with production
+
+12.2 Application Structure
+The backend follows a modular monolith pattern deployed as containerized microservices. Each service domain has its own Python package within a monorepo, sharing common libraries for authentication, database access, and messaging.
+
+Project Layout
+vibehouse/
+	•	api/ - FastAPI application, route handlers, middleware, WebSocket endpoints
+	•	core/ - Domain models, business logic, service layer
+	◦	core/vibe_engine/ - AI design pipeline, model interfaces, plan generation
+	◦	core/orchestration/ - Vendor discovery, outreach, bid management
+	◦	core/trello_sync/ - Board management, webhook handlers, scan engine
+	◦	core/reporting/ - Report generation, analytics, notification dispatch
+	◦	core/disputes/ - Conflict detection, resolution workflows, mediation
+	•	db/ - SQLAlchemy models, Alembic migrations, query helpers
+	•	tasks/ - Celery task definitions, schedules, retry policies
+	•	integrations/ - Third-party API clients (Trello, Twilio, SendGrid, Stripe)
+	•	common/ - Shared utilities, logging, error handling, constants
+	•	tests/ - Unit, integration, and end-to-end test suites
+
+12.3 Async Architecture
+The entire backend is async-first. All I/O-bound operations use Python asyncio with async database drivers (asyncpg), async HTTP clients (httpx), and async Redis connections (redis.asyncio). CPU-bound operations like AI model inference and document generation are offloaded to Celery workers running in separate containers, preventing the API servers from blocking.
+
+12.4 Performance Targets
+
+Operation
+Target Latency
+Throughput
+API endpoint response (p99)
+< 200ms
+1,000 req/s per instance
+Trello webhook processing
+< 100ms ACK, < 5s full processing
+500 events/min
+Design generation (full pipeline)
+< 90 seconds end-to-end
+10 concurrent builds
+Daily report generation
+< 30 seconds per project
+1,000 reports/hour
+Vendor search and ranking
+< 3 seconds
+100 concurrent searches
+Board full reconciliation
+< 10 seconds per board
+All active projects every 15 min
+Database query (p95)
+< 50ms
+5,000 queries/s
+
+13. Data Models & Database Schema
+
+13.1 Core Entity Relationship Map
+The database schema is organized around six primary entity groups: Users & Organizations, Projects & Phases, Design Artifacts, Vendors & Contracts, Trello Sync State, and Disputes & Resolutions. All entities include standard audit columns (created_at, updated_at, created_by) and soft-delete support.
+
+13.2 Key Tables
+
+Table
+Primary Purpose
+Key Fields
+Relationships
+users
+User accounts and profiles
+id, email, role, phone, preferences (JSONB)
+Has many projects, disputes
+projects
+Top-level project container
+id, owner_id, status, address, budget, trello_board_id
+Belongs to user, has many phases
+project_phases
+Construction phases within a project
+id, project_id, phase_type, status, start_date, end_date
+Belongs to project, has many tasks
+tasks
+Individual construction tasks
+id, phase_id, trello_card_id, status, assignee_id, dependencies (JSONB)
+Belongs to phase, assigned to vendor
+design_artifacts
+Generated design documents
+id, project_id, artifact_type, version, file_url, metadata (JSONB)
+Belongs to project
+vendors
+Contractor and supplier profiles
+id, company_name, trades (JSONB), license_info, rating, location
+Has many contracts
+contracts
+Vendor-project agreements
+id, project_id, vendor_id, scope, amount, milestones (JSONB)
+Links vendor to project
+disputes
+Active and resolved disputes
+id, project_id, status, type, parties (JSONB), resolution
+Belongs to project
+daily_reports
+Generated daily reports
+id, project_id, report_date, content (JSONB), pdf_url
+Belongs to project
+trello_sync_state
+Board synchronization state
+id, project_id, board_id, last_sync, state_hash
+Belongs to project
+audit_log
+Complete audit trail
+id, entity_type, entity_id, action, actor_id, diff (JSONB)
+Global
+
+14. API Specification
+
+14.1 API Design Principles
+The VibeHouse API follows RESTful conventions with JSON payloads, using OAuth 2.0 + JWT for authentication. All endpoints are versioned (v1), rate-limited, and documented via auto-generated OpenAPI 3.1 specifications. WebSocket endpoints are available for real-time updates.
+
+14.2 Core API Endpoints
+
+Method
+Endpoint
+Description
+Auth
+POST
+/api/v1/projects
+Create a new project from vibe description
+User
+GET
+/api/v1/projects/{id}
+Get project details and status
+User/Contractor
+POST
+/api/v1/projects/{id}/vibe
+Submit or refine vibe description
+User
+GET
+/api/v1/projects/{id}/designs
+List generated design options
+User
+POST
+/api/v1/projects/{id}/designs/{did}/select
+Select a design option
+User
+GET
+/api/v1/projects/{id}/board
+Get Trello board state snapshot
+User/Contractor
+POST
+/api/v1/projects/{id}/vendors/search
+Trigger vendor discovery
+System
+GET
+/api/v1/projects/{id}/vendors/bids
+List incoming bids
+User
+POST
+/api/v1/projects/{id}/disputes
+File a new dispute
+User/Contractor
+PATCH
+/api/v1/projects/{id}/disputes/{did}
+Update dispute status/resolution
+User/Contractor
+GET
+/api/v1/projects/{id}/reports/daily
+Get daily reports list
+User/Contractor
+POST
+/api/v1/webhooks/trello
+Trello webhook receiver
+Trello
+WS
+/api/v1/ws/projects/{id}
+Real-time project updates stream
+User/Contractor
+
+15. Security & Compliance
+
+15.1 Authentication & Authorization
+	•	OAuth 2.0 + JWT: All API access requires valid JWT tokens issued via OAuth 2.0 authorization code flow. Tokens expire after 1 hour with refresh token rotation.
+	•	Role-Based Access Control (RBAC): Four roles: Homeowner, Contractor, Inspector, Admin. Each role has granular permissions mapped to API endpoints and data visibility.
+	•	Multi-Factor Authentication: Required for all financial operations, contract signing, and dispute escalation actions.
+	•	API Key Management: Service-to-service communication uses rotated API keys with IP whitelisting.
+
+15.2 Data Protection
+	•	Encryption at Rest: AES-256 encryption for all data in PostgreSQL (pgcrypto), S3 (SSE-S3), and Redis (TLS).
+	•	Encryption in Transit: TLS 1.3 enforced on all connections. Certificate pinning for mobile clients.
+	•	PII Handling: Personal information is stored in dedicated encrypted columns with access logging. Contractor SSN/EIN data is tokenized via Stripe Identity.
+	•	Audit Logging: Every data access, modification, and API call is logged with actor, timestamp, IP, and before/after state diffs.
+
+15.3 Compliance
+	•	SOC 2 Type II: Targeted for Phase 2 certification. Controls implemented from Phase 1.
+	•	CCPA/GDPR: Full data portability, deletion rights, consent management, and privacy dashboard.
+	•	PCI DSS: Payment processing delegated to Stripe. No raw card data touches VibeHouse servers.
+	•	Construction Licensing: Platform verifies contractor licenses against state databases before engagement.
+
+16. Performance & Scalability
+
+16.1 Scaling Strategy
+VibeHouse is designed to scale horizontally at every layer. API servers are stateless and scale behind a load balancer. Celery workers scale independently per queue priority. PostgreSQL uses read replicas for reporting queries and connection pooling via PgBouncer. Redis Cluster provides distributed caching with automatic sharding.
+
+16.2 Capacity Planning
+
+Metric
+Phase 1 Target
+Phase 2 Target
+Phase 3 Target
+Concurrent Active Projects
+100
+1,000
+10,000
+API Requests/Second
+500
+5,000
+50,000
+Trello Webhooks/Minute
+200
+2,000
+20,000
+Daily Reports Generated/Day
+100
+1,000
+10,000
+Design Generations/Day
+50
+500
+5,000
+Database Size (Projected)
+50 GB
+500 GB
+5 TB
+Object Storage (Projected)
+500 GB
+5 TB
+50 TB
+
+17. Third-Party Integrations
+
+
+Integration
+Provider
+Purpose
+Priority
+Project Board
+Trello (Atlassian)
+Build Board management, task tracking, collaboration
+P0
+Email
+SendGrid
+Transactional emails, report delivery, vendor outreach
+P0
+SMS / Voice
+Twilio
+Notifications, alerts, automated vendor calls
+P0
+Payments
+Stripe
+Homeowner billing, contractor payments, escrow
+P1
+Weather
+OpenWeatherMap / Tomorrow.io
+Construction weather forecasting, delay prediction
+P1
+Mapping / Geocoding
+Google Maps Platform
+Site location, vendor proximity, delivery routing
+P0
+Building Codes
+ICC Digital Codes API
+Code compliance verification, jurisdiction lookups
+P1
+Permit Tracking
+OpenGov / Municipal APIs
+Permit submission status, inspection scheduling
+P2
+Material Pricing
+RSMeans / BuildingConnected
+Real-time material and labor cost data
+P1
+Document Storage
+AWS S3
+Design files, contracts, photos, reports
+P0
+AI Models
+OpenAI / Anthropic
+NLP processing, design assistance, analysis
+P0
+Identity Verification
+Stripe Identity / Persona
+Contractor license and identity verification
+P1
+Calendar
+Google Calendar API
+Inspection scheduling, milestone reminders
+P2
+
+18. User Interface & UX Flows
+
+18.1 Platform Structure
+VibeHouse provides three interfaces: a web application (React/Next.js), a mobile application (React Native), and the Trello Build Board. The web and mobile apps provide the full experience for homeowners. Contractors primarily interact through Trello and a lightweight mobile companion app.
+
+18.2 Core User Flows
+
+Flow 1: Vibe-to-Design (Homeowner)
+	9	Onboarding: User creates account, provides build location and rough budget range.
+	10	Vibe Session: Guided conversational interface captures the user's vision through natural language and reference image uploads.
+	11	AI Processing: System generates Requirement Specification Object and produces 3 floor plan options.
+	12	Design Review: User reviews plans in an interactive viewer with AI-annotated explanations of design decisions.
+	13	Refinement Loop: User provides feedback ("make the kitchen bigger," "add a mudroom"). AI regenerates.
+	14	Plan Finalization: User approves final design. Full construction document set is generated.
+	15	Board Creation: Trello Build Board is auto-generated with the complete construction schedule.
+
+Flow 2: Build Monitoring (Homeowner)
+	16	Dashboard: User opens the VibeHouse dashboard showing project health, budget, timeline, and today's activities.
+	17	Board Check: User navigates to the Trello Build Board (embedded or linked) to see current task status.
+	18	Report Review: User reads the daily report delivered to email and available in-app.
+	19	Action Response: User responds to any pending decisions, approvals, or dispute prompts.
+	20	Photo Review: User browses site photos uploaded by contractors.
+
+Flow 3: Dispute Resolution (Homeowner or Contractor)
+	21	Alert: System detects an issue or a stakeholder files a dispute.
+	22	Context Gathering: AI presents the dispute summary with full context, contract references, and options.
+	23	Response: User selects from resolution options or provides a counter-proposal.
+	24	Negotiation: Structured back-and-forth through the platform with AI facilitation.
+	25	Resolution: Agreement is reached, documented, and reflected on the Trello board and project schedule.
+
+19. Release Roadmap & Milestones
+
+
+Phase
+Timeline
+Key Deliverables
+Success Criteria
+Phase 1: Foundation
+Months 1-4
+Core platform, Vibe Engine v1, Trello integration, basic vendor outreach, daily reports, dispute filing
+5 pilot projects completed end-to-end
+Phase 2: Scale
+Months 5-8
+3D visualization, bid comparison, enhanced dispute AI, photo integration, permit packaging, Stripe payments
+50 active projects, < 5% dispute escalation rate
+Phase 3: Intelligence
+Months 9-12
+Predictive scheduling, contractor scoring, cost prediction ML, multi-project portfolio view, API marketplace
+500 active projects, 90% homeowner satisfaction
+Phase 4: Expansion
+Months 13-18
+Commercial construction support, multi-family, international jurisdictions, white-label API, mobile-first contractor app
+2,000 active projects, Series A metrics achieved
+
+20. Success Metrics & KPIs
+
+
+Category
+Metric
+Target
+Measurement
+Adoption
+Projects created per month
+100 by Month 6
+Platform analytics
+Adoption
+Vibe-to-design completion rate
+> 70%
+Funnel analytics
+Quality
+Design accuracy score (user rating)
+> 4.2 / 5.0
+Post-design survey
+Quality
+Construction document error rate
+< 2%
+Inspector feedback
+Speed
+Vibe-to-plan generation time
+< 90 seconds
+System metrics
+Speed
+Vendor first-response time
+< 48 hours
+Communication logs
+Engagement
+Daily report open rate
+> 80%
+Email analytics
+Engagement
+Trello board daily active interactions
+> 5 per stakeholder
+Trello API metrics
+Financial
+Average project budget variance
+< 10% overrun
+Financial module
+Financial
+Platform revenue per project
+$5K - $25K
+Billing system
+Satisfaction
+Net Promoter Score (NPS)
+> 60
+Quarterly surveys
+Disputes
+Disputes resolved at Stage 1-2
+> 85%
+Dispute engine analytics
+Disputes
+Average dispute resolution time
+< 5 days
+Dispute engine analytics
+Reliability
+Platform uptime
+99.9%
+Monitoring
+Reliability
+Trello sync lag (p95)
+< 10 seconds
+System metrics
+
+21. Risk Assessment & Mitigations
+
+
+Risk
+Likelihood
+Impact
+Mitigation Strategy
+AI-generated plans contain structural errors
+Medium
+Critical
+Mandatory professional engineer review for all structural calculations. Liability insurance. Phased rollout with human-in-the-loop validation.
+Trello API rate limits constrain scaling
+High
+High
+Implement aggressive caching, webhook-first architecture, batch API calls. Evaluate migration to custom board at Phase 3.
+Contractors refuse to adopt Trello workflow
+Medium
+High
+Provide lightweight mobile companion app. Allow SMS/email-only interaction with AI translating to board updates. Incentive program for early adopters.
+Vendor quality is inconsistent across markets
+High
+Medium
+Build performance scoring system. Require insurance and license verification. Start in 5 metro areas with vetted vendor networks.
+Regulatory complexity across jurisdictions
+High
+High
+Start with 3 states (CA, TX, FL). Build jurisdiction database incrementally. Partner with local code consultants.
+AI model costs exceed projections
+Medium
+Medium
+Implement model cascading (cheaper models for simple tasks). Cache common patterns. Negotiate volume discounts with providers.
+Data breach or security incident
+Low
+Critical
+SOC 2 controls from Day 1. Penetration testing quarterly. Bug bounty program. Cyber insurance.
+User adoption lower than projected
+Medium
+High
+Launch with builder partnerships who bring homeowner clients. Content marketing. Freemium design-only tier.
+
+22. Appendices
+
+Appendix A: Glossary
+
+Term
+Definition
+Vibe Code
+The process of describing a desired outcome in natural language and having AI translate it into technical specifications and executable plans.
+Build Board
+The Trello-based project management board that serves as the single source of truth for a construction project.
+RSO (Requirement Specification Object)
+A structured JSON representation of all design requirements extracted from the user's vibe description.
+Critical Path
+The longest sequence of dependent tasks that determines the minimum project duration.
+Change Order
+A formal modification to the original scope, budget, or timeline of the construction project.
+RFQ (Request for Quotation)
+A formal document sent to contractors requesting a price quote for specific work.
+MEP
+Mechanical, Electrical, and Plumbing - the three major building systems beyond structural.
+DXA
+Device Independent Pixels - the unit of measurement used in OOXML documents (1440 DXA = 1 inch).
+
+Appendix B: Competitive Landscape
+
+Competitor
+Strength
+Weakness
+VibeHouse Advantage
+Procore
+Enterprise construction management
+Not consumer-friendly, no AI design
+End-to-end from design, consumer-first UX
+Houzz
+Design inspiration, contractor directory
+No project management, no AI
+Active management, not just inspiration
+Cedreo
+3D home design software
+Design-only, no construction mgmt
+Full lifecycle through construction
+BuilderTrend
+Builder project management
+Builder-centric, not homeowner-facing
+Homeowner-first with builder integration
+Higharc
+AI-assisted home design
+Limited to design phase
+Design through construction completion
+
+Appendix C: Technology Decision Records
+
+TDR-001: Python as Backend Language
+Decision: Use Python as the primary backend language for all VibeHouse services.
+Rationale: Python provides the strongest ecosystem for AI/ML integration (PyTorch, TensorFlow, scikit-learn, LangChain), mature async frameworks (FastAPI, Celery), excellent data processing libraries (Pandas, NumPy), and the largest pool of available engineering talent. The async capabilities of modern Python (3.12+) with FastAPI achieve performance characteristics competitive with Node.js and Go for I/O-bound workloads, which constitute the majority of VibeHouse operations.
+Trade-offs: CPU-bound operations (document rendering, model inference) are offloaded to optimized C/Rust extensions or dedicated worker processes. Critical hot paths may be reimplemented in Rust via PyO3 if profiling indicates need.
+
+TDR-002: Trello as Build Board Platform
+Decision: Use Trello via the Atlassian API as the primary Build Board platform rather than building a custom board.
+Rationale: Trello provides a familiar UX that reduces onboarding friction, a mature API with webhooks and Power-Ups, mobile apps for contractor access, and Atlassian-grade reliability. Building a custom board would add 3-4 months to Phase 1 with no immediate user benefit.
+Trade-offs: Trello API rate limits (300 requests per 10 seconds per token) require careful request management. Custom board migration planned for Phase 3 if Trello becomes a scaling bottleneck.
+
+END OF DOCUMENT
+
+VibeHouse PRD v1.0  |  Confidential  |  February 2026
