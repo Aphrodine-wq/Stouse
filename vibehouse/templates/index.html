@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}VibeHouse — Build Your Dream Home{% endblock %}
+{% block description %}Describe the home you want. Our platform turns your vision into architectural plans, finds contractors, manages the build, and keeps you updated every single day.{% endblock %}
+
+{% block body %}
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge fade-in">
+      <span class="dot"></span>
+      Now in early access
+    </div>
+    <h1 class="fade-in-up">
+      Describe your home.<br>
+      <span class="gradient-text">We'll build it.</span>
+    </h1>
+    <p class="hero-sub fade-in-up fade-in-up-delay-1">
+      Tell us what you want — the open kitchen, the big backyard, the natural light everywhere.
+      VibeHouse turns that into real plans, real contractors, and a real build you can track from your phone.
+    </p>
+    <div class="hero-actions fade-in-up fade-in-up-delay-2">
+      <a href="/dashboard" class="btn btn-filled btn-filled-lg">Start a Project</a>
+      <a href="#how-it-works" class="btn btn-gray btn-filled-lg">See How It Works</a>
+    </div>
+  </div>
+</section>
+
+<!-- App Preview -->
+<section class="preview-section" data-reveal="0">
+  <div class="preview-card">
+    <div class="preview-toolbar">
+      <div class="preview-dots"><span></span><span></span><span></span></div>
+      <div class="preview-url">vibehouse.app/dashboard</div>
+      <div style="width: 52px;"></div>
+    </div>
+    <div class="preview-body">
+      <div class="dash-preview">
+        <div class="dash-stat-card">
+          <div class="stat-label">Active Projects</div>
+          <div class="stat-value" style="color: var(--sys-blue);">3</div>
+          <div class="stat-change green" style="color: #248A3D;">+1 this month</div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="stat-label">Total Budget</div>
+          <div class="stat-value">$847K</div>
+          <div class="stat-change" style="color: var(--text-secondary);">12% under estimate</div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="stat-label">Completion</div>
+          <div class="stat-value" style="color: var(--sys-green);">64%</div>
+          <div class="stat-change" style="color: #248A3D;">On track</div>
+        </div>
+        <div class="dash-activity">
+          <div class="dash-activity-row">
+            <span class="activity-dot" style="background: var(--sys-green);"></span>
+            <span class="activity-text">Foundation pour completed — Oak Street project</span>
+            <span class="activity-time">2h ago</span>
+          </div>
+          <div class="dash-activity-row">
+            <span class="activity-dot" style="background: var(--sys-blue);"></span>
+            <span class="activity-text">3 new bids received for electrical work</span>
+            <span class="activity-time">4h ago</span>
+          </div>
+          <div class="dash-activity-row">
+            <span class="activity-dot" style="background: var(--sys-orange);"></span>
+            <span class="activity-text">Framing inspection scheduled for Thursday</span>
+            <span class="activity-time">Yesterday</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="features-section" id="features">
+  <div class="section-label">What you get</div>
+  <h2>Everything from sketch to keys</h2>
+  <p class="section-sub">
+    We didn't build another project tracker. We built the thing
+    that actually gets your house built.
+  </p>
+  <div class="features-grid" data-stagger>
+    <div class="feature-card">
+      <div class="feature-icon" style="background: rgba(0,122,255,0.12); color: var(--sys-blue);">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+      </div>
+      <h3>Plans from plain English</h3>
+      <p>
+        Say "I want a 3-bed ranch with a big wraparound porch" and get back
+        floor plans, elevations, structural specs, and a full cost breakdown.
+        No architect meetings required to get started.
+      </p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background: rgba(52,199,89,0.12); color: var(--sys-green);">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      </div>
+      <h3>Contractors found for you</h3>
+      <p>
+        We match your project to vetted local contractors across every trade —
+        plumbing, electrical, HVAC, framing, roofing, the works. They bid on
+        your job; you pick who you want.
+      </p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background: rgba(88,86,214,0.12); color: var(--sys-indigo);">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+      </div>
+      <h3>Live build board</h3>
+      <p>
+        Every task, every phase, every contractor — tracked on a Trello board
+        that updates itself. You always know what happened today and what's
+        happening tomorrow.
+      </p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background: rgba(255,149,0,0.12); color: var(--sys-orange);">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      </div>
+      <h3>Morning reports, daily</h3>
+      <p>
+        Every morning you get a clear report: what got done yesterday, what's
+        on deck today, where the budget stands, and if anything needs your
+        attention. No more chasing people for updates.
+      </p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background: rgba(255,45,85,0.12); color: var(--sys-pink);">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <h3>Catches problems early</h3>
+      <p>
+        Contractor conflict? Budget creep? Schedule slip? The system spots
+        patterns before they become real problems and walks everyone through
+        a structured fix.
+      </p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background: rgba(175,82,222,0.12); color: var(--sys-purple);">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      </div>
+      <h3>Budget you can trust</h3>
+      <p>
+        Real-time spend tracking against your original estimate, broken down
+        by phase. You'll know the moment something goes off track, not three
+        weeks later when the invoice shows up.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section class="steps-section" id="how-it-works">
+  <h2>Three steps. Seriously.</h2>
+  <div class="step-list">
+    <div class="step-item" data-reveal="0">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>Tell us about your house</h3>
+        <p>
+          Use whatever words feel right. "Modern farmhouse with lots of windows" works
+          just as well as a 20-page brief. The more you share, the more specific the
+          plans — but you can always start loose and refine from there.
+        </p>
+      </div>
+    </div>
+    <div class="step-item" data-reveal="100">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>Review your options</h3>
+        <p>
+          We'll generate three design directions — each with floor plans, structural
+          details, material lists, and a cost estimate. Pick one, tweak it, or mix
+          and match. Then we start finding contractors in your area.
+        </p>
+      </div>
+    </div>
+    <div class="step-item" data-reveal="200">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>Watch it come together</h3>
+        <p>
+          Your build board goes live. Contractors get assigned, inspections get
+          scheduled, and you get daily updates. The whole project runs on
+          autopilot — you just make the big decisions.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-card" data-reveal="0">
+    <h2>Ready to build something?</h2>
+    <p>Start with a description. End with a house.</p>
+    <a href="/dashboard" class="btn btn-filled btn-filled-lg">Start Your Project</a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="ios-footer">
+  <div class="footer-inner">
+    <span class="footer-copy">VibeHouse &copy; 2026</span>
+    <ul class="footer-links">
+      <li><a href="/docs">API</a></li>
+      <li><a href="/health">Status</a></li>
+      <li><a href="#">Privacy</a></li>
+      <li><a href="#">Terms</a></li>
+    </ul>
+  </div>
+</footer>
+
+{% endblock %}
