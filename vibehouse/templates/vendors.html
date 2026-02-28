@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Vendors — VibeHouse{% endblock %}
+
+{% block body %}
+<div class="page-container fade-in-up">
+  <div class="page-header">
+    <a href="/projects/{{ project_id }}" class="btn btn-plain">&larr; Project</a>
+    <h1>Vendor Management</h1>
+    <p class="text-secondary">Find, compare, and hire contractors</p>
+  </div>
+
+  <!-- Search section -->
+  <div class="ios-card">
+    <h3>Search Contractors</h3>
+    <div class="search-row">
+      <select id="tradeSelect" class="form-select">
+        <option value="general">General Contractor</option>
+        <option value="plumbing">Plumbing</option>
+        <option value="electrical">Electrical</option>
+        <option value="roofing">Roofing</option>
+        <option value="hvac">HVAC</option>
+        <option value="painting">Painting</option>
+        <option value="flooring">Flooring</option>
+        <option value="tile">Tile</option>
+        <option value="cabinetry">Cabinetry</option>
+        <option value="landscaping">Landscaping</option>
+      </select>
+      <button class="btn btn-primary" onclick="searchVendors()">Search</button>
+    </div>
+  </div>
+
+  <div id="searchResults" style="display:none;">
+    <div class="ios-section-header">Search Results</div>
+    <div id="vendorList" class="vendor-list"></div>
+  </div>
+
+  <!-- Existing bids -->
+  <div class="ios-card mt-lg">
+    <h3>Current Bids</h3>
+    <div id="bidsList">
+      <p class="text-secondary text-footnote">No bids received yet. Search for vendors to send RFQs.</p>
+    </div>
+  </div>
+
+  <!-- Contracts -->
+  <div class="ios-card mt-lg">
+    <h3>Active Contracts</h3>
+    <div id="contractsList">
+      <p class="text-secondary text-footnote">No contracts created yet.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const PROJECT_ID = '{{ project_id }}';
+const token = localStorage.getItem('access_token');
+if (!token) window.location.href = '/login';
+const headers = {'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json'};
+
+async function searchVendors() {
+  const trade = document.getElementById('tradeSelect').value;
+  try {
+    const resp = await fetch(`/api/v1/projects/${PROJECT_ID}/vendors/search`, {
+      method: 'POST', headers,
+      body: JSON.stringify({trade, radius_miles: 30}),
+    });
+    if (!resp.ok) return;
+    const data = await resp.json();
+    document.getElementById('searchResults').style.display = 'block';
+
+    // Show results after short delay (async task)
+    setTimeout(async () => {
+      const vendorsResp = await fetch(`/api/v1/projects/${PROJECT_ID}/vendors`, {headers});
+      if (vendorsResp.ok) {
+        const vendors = await vendorsResp.json();
+        renderVendors(vendors.vendors || vendors);
+      }
+    }, 1500);
+  } catch (e) { console.error(e); }
+}
+
+function renderVendors(vendors) {
+  const list = document.getElementById('vendorList');
+  if (!vendors.length) {
+    list.innerHTML = '<p class="text-secondary">No vendors found. Try expanding your search.</p>';
+    return;
+  }
+  list.innerHTML = vendors.map(v => `
+    <div class="vendor-card">
+      <div class="vendor-header">
+        <div>
+          <h4>${v.company_name || v.name}</h4>
+          <p class="text-footnote text-secondary">${v.trade || 'General'} &middot; ${v.distance_miles ? v.distance_miles + ' mi' : ''}</p>
+        </div>
+        <div class="vendor-rating">
+          ${'&#9733;'.repeat(Math.round(v.rating || 4))} <span class="text-secondary">${v.rating || '4.0'}</span>
+        </div>
+      </div>
+      <div class="vendor-meta">
+        ${v.phone ? `<span>${v.phone}</span>` : ''}
+        ${v.licensed ? '<span class="badge badge-green">Licensed</span>' : ''}
+        ${v.insured ? '<span class="badge badge-blue">Insured</span>' : ''}
+      </div>
+    </div>
+  `).join('');
+}
+</script>
+{% endblock %}

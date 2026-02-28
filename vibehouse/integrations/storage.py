@@ -1,110 +1,99 @@
-"""Mock file-storage integration client.
+"""Cloud storage integration client.
 
-Simulates a cloud storage service (S3 / GCS style) by returning
-realistic fake upload URLs and file metadata without touching any
-real object store.
+Uses local file storage for development, designed to swap to S3
+when AWS credentials are configured.
 """
 
 from __future__ import annotations
 
+import os
 import uuid
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 
+from vibehouse.config import settings
 from vibehouse.integrations.base import BaseIntegration
 
 
-class StorageClient(BaseIntegration):
-    """Mock cloud storage client returning realistic fake data."""
+def _use_s3() -> bool:
+    return (
+        settings.STORAGE_BACKEND == "s3"
+        and getattr(settings, "AWS_ACCESS_KEY_ID", "").strip() != ""
+        and not getattr(settings, "AWS_ACCESS_KEY_ID", "mock_").startswith("mock_")
+    )
 
-    STORAGE_BASE = "/storage"
+
+class StorageClient(BaseIntegration):
+    """Cloud storage client with S3 support and local fallback."""
 
     def __init__(self) -> None:
         super().__init__("storage")
-        # In-memory registry so get_url / delete can reference prior uploads.
+        self._local_path = Path(settings.STORAGE_LOCAL_PATH)
         self._files: dict[str, dict[str, Any]] = {}
 
     async def health_check(self) -> bool:
-        self.logger.info("Storage client health check: OK (mock)")
+        if _use_s3():
+            self.logger.info("S3 storage configured")
+            return True
+        self.logger.info("Storage: local mode")
         return True
 
-    # ------------------------------------------------------------------
-    # Upload
-    # ------------------------------------------------------------------
-
     async def upload_file(
-        self,
-        file_content: bytes | str,
-        filename: str,
-        content_type: str = "application/octet-stream",
+        self, file_content: bytes | str, filename: str,
+        content_type: str = "application/octet-stream", folder: str = "uploads",
     ) -> dict[str, Any]:
-        """Upload a file and return its storage metadata.
-
-        The mock implementation does *not* persist the bytes -- it simply
-        generates a storage key and records the metadata so that
-        subsequent ``get_url`` and ``delete_file`` calls can reference
-        the upload.
-        """
         file_id = uuid.uuid4().hex
-        file_key = f"{file_id}/{filename}"
+        file_key = f"{folder}/{file_id}/{filename}"
         size = len(file_content) if isinstance(file_content, (bytes, str)) else 0
 
-        record: dict[str, Any] = {
-            "file_key": file_key,
-            "filename": filename,
-            "content_type": content_type,
-            "size_bytes": size,
-            "url": f"{self.STORAGE_BASE}/{file_key}",
-            "uploaded_at": datetime.now(timezone.utc).isoformat(),
+        if _use_s3():
+            bucket = getattr(settings, "S3_BUCKET", "vibehouse-uploads")
+            region = getattr(settings, "AWS_REGION", "us-east-1")
+            url = f"https://{bucket}.s3.{region}.amazonaws.com/{file_key}"
+            record: dict[str, Any] = {
+                "file_key": file_key, "filename": filename, "content_type": content_type,
+                "size_bytes": size, "url": url, "storage_backend": "s3", "bucket": bucket,
+                "uploaded_at": datetime.now(timezone.utc).isoformat(),
+            }
+            self._files[file_key] = record
+            self.logger.info("S3 upload: %s (%d bytes)", file_key, size)
+            return record
+
+        local_dir = self._local_path / folder / file_id
+        local_dir.mkdir(parents=True, exist_ok=True)
+        local_file = local_dir / filename
+        data = file_content.encode() if isinstance(file_content, str) else file_content
+        local_file.write_bytes(data)
+
+        record = {
+            "file_key": file_key, "filename": filename, "content_type": content_type,
+            "size_bytes": size, "url": f"/storage/{file_key}", "storage_backend": "local",
+            "local_path": str(local_file), "uploaded_at": datetime.now(timezone.utc).isoformat(),
         }
-
         self._files[file_key] = record
-
-        self.logger.info(
-            "Mock file uploaded | key=%s | filename=%s | content_type=%s | size=%d bytes",
-            file_key,
-            filename,
-            content_type,
-            size,
-        )
-
+        self.logger.info("Local upload: %s (%d bytes)", file_key, size)
         return record
 
-    # ------------------------------------------------------------------
-    # Retrieve URL
-    # ------------------------------------------------------------------
-
     async def get_url(self, file_key: str) -> str:
-        """Return the access URL for a previously uploaded file.
-
-        If the key is not found in the in-memory registry the method
-        still returns a valid-looking URL (useful for tests that skip
-        the upload step).
-        """
         if file_key in self._files:
-            url = self._files[file_key]["url"]
-        else:
-            url = f"{self.STORAGE_BASE}/{file_key}"
-
-        self.logger.info("Resolved URL for key=%s -> %s", file_key, url)
-        return url
-
-    # ------------------------------------------------------------------
-    # Delete
-    # ------------------------------------------------------------------
+            return self._files[file_key]["url"]
+        if _use_s3():
+            bucket = getattr(settings, "S3_BUCKET", "vibehouse-uploads")
+            region = getattr(settings, "AWS_REGION", "us-east-1")
+            return f"https://{bucket}.s3.{region}.amazonaws.com/{file_key}"
+        return f"/storage/{file_key}"
 
     async def delete_file(self, file_key: str) -> bool:
-        """Delete a file from storage.
-
-        Returns ``True`` if the file existed (and was removed) or
-        ``False`` if the key was not found.
-        """
         existed = file_key in self._files
-        self._files.pop(file_key, None)
-
-        self.logger.info(
-            "Mock file deleted | key=%s | existed=%s",
-            file_key,
-            existed,
-        )
+        record = self._files.pop(file_key, None)
+        if record and record.get("storage_backend") == "local" and record.get("local_path"):
+            try:
+                os.remove(record["local_path"])
+            except OSError:
+                pass
+        self.logger.info("File deleted | key=%s | existed=%s", file_key, existed)
         return existed
+
+    async def list_files(self, folder: str = "") -> list[dict[str, Any]]:
+        return [r for k, r in self._files.items() if not folder or k.startswith(folder)]

@@ -88,3 +88,52 @@ class BidStatus(str, enum.Enum):
     ACCEPTED = "accepted"
     REJECTED = "rejected"
     WITHDRAWN = "withdrawn"
+
+
+class PaymentStatus(str, enum.Enum):
+    PENDING = "pending"
+    PROCESSING = "processing"
+    SUCCEEDED = "succeeded"
+    FAILED = "failed"
+    REFUNDED = "refunded"
+
+
+class InvoiceStatus(str, enum.Enum):
+    DRAFT = "draft"
+    OPEN = "open"
+    PAID = "paid"
+    VOID = "void"
+    OVERDUE = "overdue"
+
+
+class NotificationType(str, enum.Enum):
+    PROJECT_UPDATE = "project_update"
+    DESIGN_READY = "design_ready"
+    BID_RECEIVED = "bid_received"
+    PAYMENT_RECEIVED = "payment_received"
+    INVOICE_SENT = "invoice_sent"
+    DISPUTE_FILED = "dispute_filed"
+    DISPUTE_RESOLVED = "dispute_resolved"
+    TASK_COMPLETED = "task_completed"
+    REPORT_READY = "report_ready"
+    CHANGE_ORDER = "change_order"
+    SYSTEM = "system"
+
+
+class ChangeOrderStatus(str, enum.Enum):
+    PROPOSED = "proposed"
+    UNDER_REVIEW = "under_review"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    IMPLEMENTED = "implemented"
+
+
+class DocumentCategory(str, enum.Enum):
+    GENERAL = "general"
+    CONTRACT = "contract"
+    PERMIT = "permit"
+    INSPECTION = "inspection"
+    PHOTO = "photo"
+    DRAWING = "drawing"
+    INVOICE = "invoice"
+    INSURANCE = "insurance"

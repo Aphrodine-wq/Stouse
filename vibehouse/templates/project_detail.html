@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+{% block title %}Project — VibeHouse{% endblock %}
+
+{% block body %}
+<div class="page-container fade-in-up">
+  <div class="page-header">
+    <a href="/dashboard" class="btn btn-plain">&larr; Dashboard</a>
+    <h1 id="projectTitle">Loading...</h1>
+    <div class="page-header-actions">
+      <span id="projectStatus" class="project-status"></span>
+    </div>
+  </div>
+
+  <!-- Project tabs -->
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="overview">Overview</button>
+    <button class="tab-btn" data-tab="timeline">Timeline</button>
+    <button class="tab-btn" data-tab="documents">Documents</button>
+    <button class="tab-btn" data-tab="activity">Activity</button>
+  </div>
+
+  <!-- Overview tab -->
+  <div class="tab-panel active" id="tab-overview">
+    <div class="detail-grid">
+      <!-- Stats row -->
+      <div class="overview-stats" data-stagger>
+        <div class="overview-stat">
+          <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+          <div class="stat-number" id="statBudget">$0</div>
+          <div class="stat-title">Budget</div>
+        </div>
+        <div class="overview-stat">
+          <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+          <div class="stat-number" id="statSpent">$0</div>
+          <div class="stat-title">Spent</div>
+        </div>
+        <div class="overview-stat">
+          <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF9500" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="stat-number" id="statPhase">—</div>
+          <div class="stat-title">Current Phase</div>
+        </div>
+        <div class="overview-stat">
+          <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#AF52DE" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+          <div class="stat-number" id="statProgress">0%</div>
+          <div class="stat-title">Complete</div>
+        </div>
+      </div>
+
+      <!-- Vibe description -->
+      <div class="ios-card" id="vibeCard" style="display:none;">
+        <h3>Your Vibe</h3>
+        <p id="vibeText" class="text-secondary"></p>
+        <button id="generateDesignsBtn" class="btn btn-tinted mt-md" onclick="submitVibe()">Generate Design Options</button>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="ios-card">
+        <h3>Quick Actions</h3>
+        <div class="action-grid">
+          <a href="/projects/{{ project_id }}/designs" class="action-item">
+            <div class="action-icon" style="background: rgba(0,122,255,0.12); color: var(--sys-blue);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+            </div>
+            <span>View Designs</span>
+          </a>
+          <a href="/projects/{{ project_id }}/vendors" class="action-item">
+            <div class="action-icon" style="background: rgba(255,149,0,0.12); color: var(--sys-orange);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            </div>
+            <span>Find Vendors</span>
+          </a>
+          <a href="/projects/{{ project_id }}/budget" class="action-item">
+            <div class="action-icon" style="background: rgba(52,199,89,0.12); color: var(--sys-green);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            </div>
+            <span>Budget</span>
+          </a>
+          <button class="action-item" onclick="document.getElementById('uploadInput').click()">
+            <div class="action-icon" style="background: rgba(175,82,222,0.12); color: var(--sys-purple);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            </div>
+            <span>Upload File</span>
+          </button>
+        </div>
+        <input type="file" id="uploadInput" style="display:none" onchange="uploadFile(this)">
+      </div>
+
+      <!-- Recent documents -->
+      <div class="ios-card">
+        <div class="card-header-row">
+          <h3>Documents</h3>
+          <span id="docCount" class="text-footnote text-secondary">0 files</span>
+        </div>
+        <div id="docList" class="doc-list">
+          <p class="text-secondary text-footnote">No documents yet</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timeline tab -->
+  <div class="tab-panel" id="tab-timeline">
+    <div class="ios-card">
+      <h3>Construction Timeline</h3>
+      <div id="phaseList" class="phase-list">
+        <p class="text-secondary">Loading phases...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Documents tab -->
+  <div class="tab-panel" id="tab-documents">
+    <div class="ios-card">
+      <div class="card-header-row">
+        <h3>All Documents</h3>
+        <button class="btn btn-tinted" onclick="document.getElementById('uploadInput2').click()">Upload</button>
+      </div>
+      <input type="file" id="uploadInput2" style="display:none" onchange="uploadFile(this)">
+      <div id="allDocList" class="doc-list">
+        <p class="text-secondary text-footnote">No documents yet</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activity tab -->
+  <div class="tab-panel" id="tab-activity">
+    <div class="ios-card">
+      <h3>Recent Activity</h3>
+      <div id="activityFeed" class="activity-feed">
+        <p class="text-secondary">Loading activity...</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const PROJECT_ID = '{{ project_id }}';
+const token = localStorage.getItem('access_token');
+if (!token) window.location.href = '/login';
+const headers = {'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json'};
+
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+async function loadProject() {
+  try {
+    const resp = await fetch(`/api/v1/projects/${PROJECT_ID}`, {headers});
+    if (!resp.ok) { window.location.href = '/dashboard'; return; }
+    const p = await resp.json();
+    document.getElementById('projectTitle').textContent = p.title;
+    document.getElementById('projectStatus').textContent = p.status.replace('_', ' ');
+    document.getElementById('projectStatus').className = 'project-status status-' + p.status;
+    document.getElementById('statBudget').textContent = p.budget ? '$' + Number(p.budget).toLocaleString() : '—';
+    document.getElementById('statSpent').textContent = '$' + Number(p.budget_spent).toLocaleString();
+    if (p.vibe_description) {
+      document.getElementById('vibeCard').style.display = 'block';
+      document.getElementById('vibeText').textContent = p.vibe_description;
+    }
+    if (p.status === 'designing' || p.status === 'planning' || p.status === 'in_progress') {
+      document.getElementById('generateDesignsBtn').style.display = 'none';
+    }
+  } catch (e) { console.error(e); }
+}
+
+async function loadDocuments() {
+  try {
+    const resp = await fetch(`/api/v1/documents/${PROJECT_ID}`, {headers});
+    if (!resp.ok) return;
+    const docs = await resp.json();
+    const renderList = (container, items) => {
+      if (!items.length) { container.innerHTML = '<p class="text-secondary text-footnote">No documents yet</p>'; return; }
+      container.innerHTML = items.map(d => `
+        <div class="doc-item">
+          <div class="doc-icon">${d.content_type.startsWith('image/') ? '&#128247;' : '&#128196;'}</div>
+          <div class="doc-info">
+            <div class="doc-name">${d.filename}</div>
+            <div class="doc-meta text-footnote text-secondary">${d.category} &middot; ${(d.size_bytes / 1024).toFixed(1)} KB</div>
+          </div>
+        </div>
+      `).join('');
+    };
+    document.getElementById('docCount').textContent = docs.length + ' files';
+    renderList(document.getElementById('docList'), docs.slice(0, 5));
+    renderList(document.getElementById('allDocList'), docs);
+  } catch (e) { console.error(e); }
+}
+
+async function submitVibe() {
+  const btn = document.getElementById('generateDesignsBtn');
+  btn.disabled = true;
+  btn.textContent = 'Generating...';
+  try {
+    const resp = await fetch(`/api/v1/projects/${PROJECT_ID}/vibe`, {
+      method: 'POST', headers,
+      body: JSON.stringify({vibe_description: document.getElementById('vibeText').textContent}),
+    });
+    if (resp.ok) {
+      btn.textContent = 'Designs generating...';
+      setTimeout(() => window.location.reload(), 2000);
+    }
+  } catch (e) { btn.disabled = false; btn.textContent = 'Generate Design Options'; }
+}
+
+async function uploadFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('category', 'general');
+  try {
+    const resp = await fetch(`/api/v1/documents/${PROJECT_ID}/upload`, {
+      method: 'POST',
+      headers: {'Authorization': `Bearer ${token}`},
+      body: formData,
+    });
+    if (resp.ok) loadDocuments();
+  } catch (e) { console.error(e); }
+  input.value = '';
+}
+
+loadProject();
+loadDocuments();
+</script>
+{% endblock %}

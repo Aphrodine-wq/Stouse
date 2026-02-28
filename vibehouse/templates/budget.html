@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block title %}Budget — VibeHouse{% endblock %}
+
+{% block body %}
+<div class="page-container fade-in-up">
+  <div class="page-header">
+    <a href="/projects/{{ project_id }}" class="btn btn-plain">&larr; Project</a>
+    <h1>Budget & Payments</h1>
+  </div>
+
+  <!-- Budget overview -->
+  <div class="overview-stats" data-stagger>
+    <div class="overview-stat">
+      <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+      <div class="stat-number" id="totalBudget">$0</div>
+      <div class="stat-title">Total Budget</div>
+    </div>
+    <div class="overview-stat">
+      <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF9500" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+      <div class="stat-number" id="totalSpent">$0</div>
+      <div class="stat-title">Total Spent</div>
+    </div>
+    <div class="overview-stat">
+      <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+      <div class="stat-number" id="remaining">$0</div>
+      <div class="stat-title">Remaining</div>
+    </div>
+    <div class="overview-stat">
+      <div class="stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#AF52DE" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+      <div class="stat-number" id="invoiceCount">0</div>
+      <div class="stat-title">Invoices</div>
+    </div>
+  </div>
+
+  <!-- Budget bar -->
+  <div class="ios-card">
+    <h3>Budget Usage</h3>
+    <div class="budget-bar-container">
+      <div class="ios-progress" style="height: 12px;">
+        <div id="budgetBar" class="ios-progress-fill" style="width: 0%; background: var(--sys-green); transition: width 1s ease;"></div>
+      </div>
+      <div class="budget-bar-labels">
+        <span id="budgetPct" class="text-footnote">0% used</span>
+        <span id="budgetRemaining" class="text-footnote text-secondary">$0 remaining</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent payments -->
+  <div class="ios-card">
+    <div class="card-header-row">
+      <h3>Payments</h3>
+      <button class="btn btn-tinted" onclick="showPaymentModal()">New Payment</button>
+    </div>
+    <div id="paymentsList">
+      <p class="text-secondary text-footnote">No payments recorded yet.</p>
+    </div>
+  </div>
+
+  <!-- Invoices -->
+  <div class="ios-card">
+    <h3>Invoices</h3>
+    <div id="invoicesList">
+      <p class="text-secondary text-footnote">No invoices yet.</p>
+    </div>
+  </div>
+
+  <!-- Change Orders -->
+  <div class="ios-card">
+    <h3>Change Orders</h3>
+    <div id="changeOrdersList">
+      <p class="text-secondary text-footnote">No change orders.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const PROJECT_ID = '{{ project_id }}';
+const token = localStorage.getItem('access_token');
+if (!token) window.location.href = '/login';
+const headers = {'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json'};
+
+async function loadBudget() {
+  try {
+    const resp = await fetch(`/api/v1/projects/${PROJECT_ID}`, {headers});
+    if (!resp.ok) return;
+    const p = await resp.json();
+    const budget = parseFloat(p.budget) || 0;
+    const spent = parseFloat(p.budget_spent) || 0;
+    const remaining = budget - spent;
+    const pct = budget > 0 ? Math.round((spent / budget) * 100) : 0;
+
+    document.getElementById('totalBudget').textContent = '$' + budget.toLocaleString();
+    document.getElementById('totalSpent').textContent = '$' + spent.toLocaleString();
+    document.getElementById('remaining').textContent = '$' + remaining.toLocaleString();
+    document.getElementById('budgetBar').style.width = pct + '%';
+    document.getElementById('budgetBar').style.background = pct > 90 ? 'var(--sys-red)' : pct > 70 ? 'var(--sys-orange)' : 'var(--sys-green)';
+    document.getElementById('budgetPct').textContent = pct + '% used';
+    document.getElementById('budgetRemaining').textContent = '$' + remaining.toLocaleString() + ' remaining';
+  } catch (e) { console.error(e); }
+
+  // Load payments
+  try {
+    const resp = await fetch(`/api/v1/payments/${PROJECT_ID}`, {headers});
+    if (resp.ok) {
+      const payments = await resp.json();
+      if (payments.length) {
+        document.getElementById('paymentsList').innerHTML = payments.map(p => `
+          <div class="list-item">
+            <div class="list-item-body">
+              <div class="list-item-title">$${Number(p.amount).toLocaleString()}</div>
+              <div class="list-item-desc text-footnote text-secondary">${p.description || 'Payment'} &middot; ${p.status}</div>
+            </div>
+            <span class="badge badge-${p.status === 'succeeded' ? 'green' : 'grey'}">${p.status}</span>
+          </div>
+        `).join('');
+      }
+    }
+  } catch (e) {}
+
+  // Load invoices
+  try {
+    const resp = await fetch(`/api/v1/payments/invoices/${PROJECT_ID}`, {headers});
+    if (resp.ok) {
+      const invoices = await resp.json();
+      document.getElementById('invoiceCount').textContent = invoices.length;
+      if (invoices.length) {
+        document.getElementById('invoicesList').innerHTML = invoices.map(inv => `
+          <div class="list-item">
+            <div class="list-item-body">
+              <div class="list-item-title">${inv.invoice_number} — $${Number(inv.amount).toLocaleString()}</div>
+              <div class="list-item-desc text-footnote text-secondary">${inv.description || ''} &middot; ${inv.status}</div>
+            </div>
+            ${inv.hosted_url ? `<a href="${inv.hosted_url}" class="btn btn-plain text-footnote" target="_blank">View</a>` : ''}
+          </div>
+        `).join('');
+      }
+    }
+  } catch (e) {}
+
+  // Load change orders
+  try {
+    const resp = await fetch(`/api/v1/change-orders/${PROJECT_ID}`, {headers});
+    if (resp.ok) {
+      const cos = await resp.json();
+      if (cos.length) {
+        document.getElementById('changeOrdersList').innerHTML = cos.map(co => `
+          <div class="list-item">
+            <div class="list-item-body">
+              <div class="list-item-title">${co.title}</div>
+              <div class="list-item-desc text-footnote text-secondary">${co.reason} &middot; Impact: $${Number(co.cost_impact).toLocaleString()}</div>
+            </div>
+            <span class="badge badge-${co.status === 'approved' ? 'green' : co.status === 'rejected' ? 'red' : 'orange'}">${co.status}</span>
+          </div>
+        `).join('');
+      }
+    }
+  } catch (e) {}
+}
+
+loadBudget();
+</script>
+{% endblock %}
