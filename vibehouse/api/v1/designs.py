@@ -172,6 +172,135 @@ async def select_design(
     )
 
 
+class DesignRefineRequest(BaseModel):
+    feedback: str
+    keep_aspects: list[str] | None = None
+    change_aspects: list[str] | None = None
+
+
+class DesignCompareResponse(BaseModel):
+    designs: list[DesignResponse]
+    comparison: dict
+
+
+@router.post("/designs/{design_id}/refine", response_model=VibeSubmitResponse)
+async def refine_design(
+    project_id: uuid.UUID,
+    design_id: uuid.UUID,
+    body: DesignRefineRequest,
+    current_user: User = Depends(require_role(UserRole.HOMEOWNER, UserRole.ADMIN)),
+    db: AsyncSession = Depends(get_db),
+):
+    """Submit refinement feedback on a design to generate improved versions.
+
+    This enables the iterative design loop: homeowner reviews a design,
+    provides feedback, and the engine generates refined alternatives.
+    """
+    project = await _get_user_project(project_id, current_user, db)
+
+    if project.status not in (ProjectStatus.DESIGNING.value, ProjectStatus.PLANNING.value):
+        raise BadRequestError("Can only refine designs for projects in designing or planning status")
+
+    result = await db.execute(
+        select(DesignArtifact).where(
+            DesignArtifact.id == design_id,
+            DesignArtifact.project_id == project_id,
+            DesignArtifact.is_deleted.is_(False),
+        )
+    )
+    design = result.scalar_one_or_none()
+    if not design:
+        raise NotFoundError("Design", str(design_id))
+
+    # Build refinement context from the existing design + feedback
+    refinement_text = (
+        f"REFINEMENT of design '{design.title}' (v{design.version}). "
+        f"Original vibe: {project.vibe_description or ''}. "
+        f"Feedback: {body.feedback}. "
+    )
+    if body.keep_aspects:
+        refinement_text += f"Keep: {', '.join(body.keep_aspects)}. "
+    if body.change_aspects:
+        refinement_text += f"Change: {', '.join(body.change_aspects)}. "
+
+    # Set project back to designing to allow new generation
+    project.status = ProjectStatus.DESIGNING.value
+    await db.flush()
+
+    from vibehouse.tasks.vibe_tasks import process_vibe_description
+    process_vibe_description.delay(str(project_id), refinement_text)
+
+    return VibeSubmitResponse(
+        message="Design refinement started. New options will be generated based on your feedback.",
+        project_id=project_id,
+        status=ProjectStatus.DESIGNING.value,
+    )
+
+
+@router.get("/designs/compare", response_model=DesignCompareResponse)
+async def compare_designs(
+    project_id: uuid.UUID,
+    design_ids: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Compare two or more floor plan designs side-by-side.
+
+    Pass design_ids as comma-separated UUIDs, e.g. ?design_ids=id1,id2,id3
+    """
+    await _get_user_project(project_id, current_user, db)
+
+    ids = [uuid.UUID(d.strip()) for d in design_ids.split(",") if d.strip()]
+    if len(ids) < 2:
+        raise BadRequestError("Provide at least 2 design IDs to compare")
+    if len(ids) > 5:
+        raise BadRequestError("Can compare at most 5 designs at a time")
+
+    result = await db.execute(
+        select(DesignArtifact).where(
+            DesignArtifact.id.in_(ids),
+            DesignArtifact.project_id == project_id,
+            DesignArtifact.is_deleted.is_(False),
+        )
+    )
+    designs = result.scalars().all()
+
+    if len(designs) < 2:
+        raise BadRequestError("Could not find enough valid designs to compare")
+
+    design_responses = [
+        DesignResponse(
+            id=d.id,
+            project_id=d.project_id,
+            artifact_type=d.artifact_type,
+            version=d.version,
+            title=d.title,
+            description=d.description,
+            file_url=d.file_url,
+            metadata=d.metadata_,
+            is_selected=d.is_selected,
+        )
+        for d in designs
+    ]
+
+    # Build comparison summary from metadata
+    comparison: dict = {"designs_compared": len(designs), "differences": {}}
+    meta_keys = set()
+    for d in designs:
+        if d.metadata_:
+            meta_keys.update(d.metadata_.keys())
+
+    for key in sorted(meta_keys):
+        values = {}
+        for d in designs:
+            if d.metadata_ and key in d.metadata_:
+                values[str(d.id)] = d.metadata_[key]
+        if len(set(str(v) for v in values.values())) > 1:
+            comparison["differences"][key] = values
+
+    return DesignCompareResponse(designs=design_responses, comparison=comparison)
+
+
 async def _get_user_project(
     project_id: uuid.UUID, user: User, db: AsyncSession
 ) -> Project:

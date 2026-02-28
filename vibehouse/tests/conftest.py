@@ -139,3 +139,13 @@ def mock_celery_tasks():
         patch("vibehouse.tasks.dispute_tasks.generate_resolution_options.delay"),
     ):
         yield
+
+
+@pytest.fixture(autouse=True)
+def mock_integrations():
+    """Mock external integration clients used in endpoint handlers."""
+    with (
+        patch("vibehouse.integrations.sendgrid.EmailClient.send_email", return_value={"message_id": "mock-123", "status": "sent"}),
+        patch("vibehouse.common.events.emit", return_value=None),
+    ):
+        yield
